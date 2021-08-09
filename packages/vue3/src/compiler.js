@@ -1,5 +1,6 @@
 import { parse, compileScript, compileTemplate, compileStyleAsync } from '@vue/compiler-sfc'
 import hash from 'hash-sum'
+import { genHotReloadCode } from './hmr'
 
 export class VueCompiler extends MultiFileCachingCompiler {
   constructor () {
@@ -71,6 +72,11 @@ export class VueCompiler extends MultiFileCachingCompiler {
     // Scope id
     if (hasScoped) {
       compileResult.source += `\n__script__.__scopeId = 'data-v-${scopeId}';`
+    }
+
+    // HMR
+    if (process.env.NODE_ENV !== 'production') {
+      compileResult.source += genHotReloadCode(scopeId)
     }
 
     // Default export
