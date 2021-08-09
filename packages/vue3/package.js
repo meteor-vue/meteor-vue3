@@ -18,6 +18,7 @@ Package.registerBuildPlugin({
     'src/index.js',
   ],
   npmDependencies: {
+    chalk: '4.1.2',
     'hash-sum': '2.0.0',
     'source-map': '0.7.3',
   },

@@ -3,6 +3,7 @@ import hash from 'hash-sum'
 import { genHotReloadCode } from './hmr'
 import path from 'path'
 import { appendSourceMaps, combineSourceMaps } from './source-map'
+import { formatError } from './error'
 
 export class VueCompiler extends MultiFileCachingCompiler {
   constructor () {
@@ -21,12 +22,13 @@ export class VueCompiler extends MultiFileCachingCompiler {
 
   async compileOneFile (inputFile) {
     const contents = inputFile.getContentsAsString()
+    const filename = inputFile.getPathInPackage()
     const { errors, descriptor } = parse(contents, {
-      filename: inputFile.getPathInPackage(),
+      filename,
     })
     if (errors.length) {
       for (const error of errors) {
-        console.error(error.message)
+        console.error(formatError(error, contents, filename))
       }
       throw new Error(`Parsing failed for ${inputFile.getDisplayPath()} (${errors.length} error(s))`)
     }
@@ -40,7 +42,7 @@ export class VueCompiler extends MultiFileCachingCompiler {
 
     const isProd = process.env.NODE_ENV === 'production'
     const hasScoped = descriptor.styles.some((s) => s.scoped)
-    const scopeId = hash(inputFile.getPathInPackage())
+    const scopeId = hash(filename)
 
     if (descriptor.script || descriptor.scriptSetup) {
       const scriptResult = compileScript(descriptor, {
@@ -54,7 +56,7 @@ export class VueCompiler extends MultiFileCachingCompiler {
     if (descriptor.template) {
       const templateResult = compileTemplate({
         id: scopeId,
-        filename: inputFile.getPathInPackage(),
+        filename,
         source: descriptor.template.content,
         scoped: hasScoped,
         isProd,
@@ -63,6 +65,12 @@ export class VueCompiler extends MultiFileCachingCompiler {
           scopeId: hasScoped ? `data-v-${scopeId}` : undefined,
         },
       })
+      if (templateResult.errors && templateResult.errors.length) {
+        for (const error of templateResult.errors) {
+          console.error(formatError(error, contents, filename))
+        }
+        throw new Error(`Compiling template failed for ${inputFile.getDisplayPath()} (${templateResult.errors.length} error(s))`)
+      }
       if (!compileResult.source) {
         compileResult.source = 'const __script__ = {};'
       } else {
@@ -94,7 +102,7 @@ export class VueCompiler extends MultiFileCachingCompiler {
 
     // File (devtools)
     if (process.env.NODE_ENV !== 'production') {
-      compileResult.source += `\n__script__.__file = ${JSON.stringify(path.resolve(process.cwd(), inputFile.getPathInPackage()))}`
+      compileResult.source += `\n__script__.__file = ${JSON.stringify(path.resolve(process.cwd(), filename))}`
     }
 
     // Default export
@@ -103,7 +111,7 @@ export class VueCompiler extends MultiFileCachingCompiler {
     const babelOptions = Babel.getDefaultOptions()
     babelOptions.babelrc = true
     babelOptions.sourceMaps = true
-    babelOptions.filename = babelOptions.sourceFileName = inputFile.getPathInPackage()
+    babelOptions.filename = babelOptions.sourceFileName = filename
     const transpiled = Babel.compile(compileResult.source, babelOptions, {
       cacheDirectory: this._diskCache,
     })
@@ -115,7 +123,7 @@ export class VueCompiler extends MultiFileCachingCompiler {
     for (const style of descriptor.styles) {
       const styleResult = await compileStyleAsync({
         id: scopeId,
-        filename: inputFile.getPathInPackage(),
+        filename,
         source: style.content,
         scoped: style.scoped,
         isProd,
