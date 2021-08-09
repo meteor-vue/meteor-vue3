@@ -1,19 +1,11 @@
-<script>
+<script setup>
 import { ref } from 'vue'
 
-export default {
-  setup () {
-    const counter = ref(0)
+const counter = ref(0)
 
-    function increment () {
-      counter.value++
-    }
-
-    return {
-      counter,
-      increment
-    }
-  }
+function increment () {
+  counter.value++
+  console.log('incremented!')
 }
 </script>
 
@@ -24,7 +16,7 @@ export default {
 
 <style scoped>
 button {
-  background: green;
+  background: #224e64;
   color: white;
   border: none;
   border-radius: 6px;

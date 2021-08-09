@@ -1,15 +1,16 @@
 <script>
-import Hello from './Hello.vue'
-
-console.log(Hello)
+import Counter from './Counter.vue'
+import ScriptSetup from './ScriptSetup.vue'
 
 export default {
   components: {
-    Hello,
+    Counter,
+    ScriptSetup,
   },
 }
 </script>
 
 <template>
-  <Hello />
+  <Counter />
+  <ScriptSetup />
 </template>

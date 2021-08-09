@@ -42,7 +42,7 @@ export class VueCompiler extends MultiFileCachingCompiler {
     const hasScoped = descriptor.styles.some((s) => s.scoped)
     const scopeId = hash(inputFile.getPathInPackage())
 
-    if (descriptor.script) {
+    if (descriptor.script || descriptor.scriptSetup) {
       const scriptResult = compileScript(descriptor, {
         id: scopeId,
         isProd,
@@ -65,6 +65,8 @@ export class VueCompiler extends MultiFileCachingCompiler {
       })
       if (!compileResult.source) {
         compileResult.source = 'const __script__ = {};'
+      } else {
+        compileResult.source += '\n'
       }
       const lines = compileResult.source.split('\n').length
       compileResult.source += templateResult.code
