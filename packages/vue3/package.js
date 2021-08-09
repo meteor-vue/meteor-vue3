@@ -19,6 +19,7 @@ Package.registerBuildPlugin({
   ],
   npmDependencies: {
     'hash-sum': '2.0.0',
+    'source-map': '0.7.3',
   },
 })
 

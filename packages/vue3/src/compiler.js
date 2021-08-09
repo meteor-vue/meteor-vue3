@@ -2,6 +2,7 @@ import { parse, compileScript, compileTemplate, compileStyleAsync } from '@vue/c
 import hash from 'hash-sum'
 import { genHotReloadCode } from './hmr'
 import path from 'path'
+import { appendSourceMaps, combineSourceMaps } from './source-map'
 
 export class VueCompiler extends MultiFileCachingCompiler {
   constructor () {
@@ -65,9 +66,18 @@ export class VueCompiler extends MultiFileCachingCompiler {
       if (!compileResult.source) {
         compileResult.source = 'const __script__ = {};'
       }
+      const lines = compileResult.source.split('\n').length
       compileResult.source += templateResult.code
         .replace(/export function render/, '__script__.render = function')
         .replace(/export const render/, '__script__.render')
+
+      if (templateResult.map) {
+        if (compileResult.sourceMap) {
+          compileResult.sourceMap = await appendSourceMaps(templateResult.map, compileResult.sourceMap, lines - 1)
+        } else {
+          compileResult.sourceMap = templateResult.map
+        }
+      }
     }
 
     // Scope id
@@ -89,10 +99,16 @@ export class VueCompiler extends MultiFileCachingCompiler {
     compileResult.source += '\nexport default __script__'
 
     const babelOptions = Babel.getDefaultOptions()
+    babelOptions.babelrc = true
+    babelOptions.sourceMaps = true
+    babelOptions.filename = babelOptions.sourceFileName = inputFile.getPathInPackage()
     const transpiled = Babel.compile(compileResult.source, babelOptions, {
       cacheDirectory: this._diskCache,
     })
     compileResult.source = transpiled.code
+    if (transpiled.map && compileResult.sourceMap) {
+      compileResult.sourceMap = await combineSourceMaps(transpiled.map, compileResult.sourceMap)
+    }
 
     for (const style of descriptor.styles) {
       const styleResult = await compileStyleAsync({
