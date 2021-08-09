@@ -76,7 +76,7 @@ export class VueCompiler extends MultiFileCachingCompiler {
     }
 
     // HMR
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== 'production' && inputFile.hmrAvailable()) {
       compileResult.source += genHotReloadCode(scopeId)
     }
 
