@@ -12,5 +12,6 @@ export default {
 
 <template>
   <Counter />
+  <br>
   <ScriptSetup />
 </template>
