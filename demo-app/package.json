@@ -1,0 +1,18 @@
+{
+  "name": "demo-app",
+  "private": true,
+  "scripts": {
+    "start": "meteor run",
+    "test": "meteor test --once --driver-package meteortesting:mocha"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.14.8",
+    "jquery": "^3.6.0",
+    "meteor-node-stubs": "^1.0.3",
+    "vue": "^3.1.0"
+  },
+  "devDependencies": {
+    "@vue/compiler-sfc": "^3.1.5",
+    "chai": "^4.2.0"
+  }
+}
