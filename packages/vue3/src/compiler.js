@@ -156,6 +156,7 @@ export class VueCompiler extends MultiFileCachingCompiler {
   }
 
   compileResultSize (result) {
-    return result.source.length + result.sourceMap.length + result.styles.reduce((total, style) => total + style.source.length + style.sourceMap ? style.sourceMap.length : 0, 0)
+    const styleSize = result.styles.reduce((total, style) => total + style.source.length + (style.sourceMap ? style.sourceMap.length : 0), 0)
+    return result.source.length + (result.sourceMap ? result.sourceMap.length : 0) + styleSize
   }
 }
