@@ -22,9 +22,19 @@ Package.registerBuildPlugin({
   },
 })
 
+Npm.depends({
+  'launch-editor-middleware': '2.2.1',
+})
+
 Package.onUse(function (api) {
   api.versionsFrom('2.3.4')
   api.use('isobuild:compiler-plugin@1.0.0')
+  api.use('ecmascript')
+  if (process.env.NODE_ENV !== 'production') {
+    api.addFiles([
+      'src/runtime/server.js',
+    ], 'server')
+  }
 })
 
 Package.onTest(function (api) {

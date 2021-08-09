@@ -1,6 +1,7 @@
 import { parse, compileScript, compileTemplate, compileStyleAsync } from '@vue/compiler-sfc'
 import hash from 'hash-sum'
 import { genHotReloadCode } from './hmr'
+import path from 'path'
 
 export class VueCompiler extends MultiFileCachingCompiler {
   constructor () {
@@ -71,7 +72,7 @@ export class VueCompiler extends MultiFileCachingCompiler {
 
     // Scope id
     if (hasScoped) {
-      compileResult.source += `\n__script__.__scopeId = 'data-v-${scopeId}';`
+      compileResult.source += `\n__script__.__scopeId = 'data-v-${scopeId}'`
     }
 
     // HMR
@@ -79,8 +80,13 @@ export class VueCompiler extends MultiFileCachingCompiler {
       compileResult.source += genHotReloadCode(scopeId)
     }
 
+    // File (devtools)
+    if (process.env.NODE_ENV !== 'production') {
+      compileResult.source += `\n__script__.__file = ${JSON.stringify(path.resolve(process.cwd(), inputFile.getPathInPackage()))}`
+    }
+
     // Default export
-    compileResult.source += '\nexport default __script__;'
+    compileResult.source += '\nexport default __script__'
 
     const babelOptions = Babel.getDefaultOptions()
     const transpiled = Babel.compile(compileResult.source, babelOptions, {
