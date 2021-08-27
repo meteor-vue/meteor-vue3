@@ -12,7 +12,7 @@ export function autorun<TResult = unknown> (callback: () => TResult): AutorunEff
   const stop = watchEffect((onInvalidate) => {
     const computation = Tracker.autorun(() => {
       let value: any = callback()
-      if (value && typeof value.fetch === 'function') {
+      if (value != null && typeof value.fetch === 'function') {
         value = value.fetch()
       }
       result.value = value
@@ -23,7 +23,7 @@ export function autorun<TResult = unknown> (callback: () => TResult): AutorunEff
   })
   return {
     result: computed<TResult | undefined>(() => result.value),
-    stop
+    stop,
   }
 }
 
@@ -51,6 +51,6 @@ export function autoSubscribe (callback: () => [name: string, ...args: any[]]): 
   })
 
   return {
-    stop
+    stop,
   }
 }
