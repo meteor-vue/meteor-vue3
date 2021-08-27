@@ -30,7 +30,7 @@ export default {
   setup () {
     const filter = ref('meow')
 
-    autoSubscribe(() => 'links.some', filter.value)
+    autoSubscribe(() => ['links.some', filter.value])
   }
 }
 ```
