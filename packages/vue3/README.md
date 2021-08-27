@@ -44,7 +44,25 @@ import { Links } from '/imports/api/links/links.js'
 
 export default {
   setup () {
-    const links = autorun(() => Links.find({}))
+    const { result: links, stop } = autorun(() => Links.find({}))
+
+    return {
+      links,
+    }
+  }
+}
+```
+
+If you don't plan on manually controlling the `autorun`, you can use `autoResult` instead which only returns the result:
+
+```js
+import { autoResult } from 'meteor/vuejs:vue3'
+// Import some collection
+import { Links } from '/imports/api/links/links.js'
+
+export default {
+  setup () {
+    const links = autoResult(() => Links.find({}))
 
     return {
       links,
@@ -57,12 +75,13 @@ Full example:
 
 ```vue
 <script setup>
+// @ts-nocheck
 import { Links } from '/imports/api/links/links.js'
-import { subscribe } from 'meteor/vuejs:vue3'
+import { subscribe, autoResult } from 'meteor/vuejs:vue3'
 
 subscribe('links.all')
 
-const { result: links } = autorun(() => Links.find({}))
+const links = autoResult(() => Links.find({}))
 
 function submit (form) {
   const title = form.title
@@ -90,7 +109,7 @@ function submit (form) {
       </form>
     </li>
     <li v-for="link of links" :key="link._id">
-      <a href="{{link.url}}" target="_blank">{{link.title}}</a>
+      <a :href="link.url" target="_blank">{{ link.title }}</a>
     </li>
   </ul>
 </template>
