@@ -1,6 +1,6 @@
 <script setup>
 // @ts-nocheck
-import { Links } from '/imports/api/links/links.js';
+import { Links } from '/imports/api/links/links.js'
 import { subscribe, autorun } from 'meteor/vuejs:vue3'
 
 subscribe('links.all')
