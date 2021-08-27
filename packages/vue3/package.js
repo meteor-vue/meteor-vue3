@@ -15,7 +15,7 @@ Package.registerBuildPlugin({
     'tmeasday:check-npm-versions@1.0.2',
   ],
   sources: [
-    'src/index.js',
+    'src/build/index.js',
   ],
   npmDependencies: {
     chalk: '4.1.2',
@@ -31,17 +31,11 @@ Npm.depends({
 Package.onUse(function (api) {
   api.versionsFrom('2.3.4')
   api.use('isobuild:compiler-plugin@1.0.0')
-  api.use('ecmascript')
+  api.use('typescript')
+  api.mainModule('src/index.ts')
   if (process.env.NODE_ENV !== 'production') {
     api.addFiles([
-      'src/runtime/server.js',
+      'src/dev-server.ts',
     ], 'server')
   }
-})
-
-Package.onTest(function (api) {
-  api.use('ecmascript')
-  api.use('tinytest')
-  api.use('vuejs:vue3')
-  api.mainModule('vue3-tests.js')
 })
