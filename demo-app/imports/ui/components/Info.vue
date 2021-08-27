@@ -1,11 +1,11 @@
 <script setup>
 // @ts-nocheck
 import { Links } from '/imports/api/links/links.js'
-import { subscribe, autorun } from 'meteor/vuejs:vue3'
+import { subscribe, autoResult } from 'meteor/vuejs:vue3'
 
 subscribe('links.all')
 
-const { result: links } = autorun(() => Links.find({}))
+const links = autoResult(() => Links.find({}))
 
 function submit (form) {
   const title = form.title

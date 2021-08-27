@@ -27,6 +27,10 @@ export function autorun<TResult = unknown> (callback: () => TResult): AutorunEff
   }
 }
 
+export function autoResult<TResult = unknown> (callback: () => TResult): ComputedRef<TResult | undefined> {
+  return autorun(callback).result
+}
+
 export function subscribe (name: string, ...args: any[]): Meteor.SubscriptionHandle {
   const sub = Meteor.subscribe(name, ...args)
   onUnmounted(() => {
