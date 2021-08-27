@@ -33,7 +33,7 @@ function submit (form) {
       </form>
     </li>
     <li v-for="link of links" :key="link._id">
-      <a href="{{link.url}}" target="_blank">{{link.title}}</a>
+      <a :href="link.url" target="_blank">{{ link.title }}</a>
     </li>
   </ul>
 </template>
