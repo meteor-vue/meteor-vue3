@@ -5,9 +5,11 @@ checkNpmVersions({
   '@vue/compiler-sfc': '^3.1.0',
 }, 'vuejs:vue3')
 
-const { VueCompiler } = require('./compiler')
+if (process.env.PUBLISHING_METEOR_VUE !== 'true') {
+  const { VueCompiler } = require('./compiler')
 
-Plugin.registerCompiler({
-  extensions: ['vue'],
-  filenames: ['.vueignore'],
-}, () => new VueCompiler())
+  Plugin.registerCompiler({
+    extensions: ['vue'],
+    filenames: ['.vueignore'],
+  }, () => new VueCompiler())
+}
