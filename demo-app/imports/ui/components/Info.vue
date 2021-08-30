@@ -3,7 +3,7 @@
 import { Links } from '/imports/api/links/links.js'
 import { subscribe, autoResult } from 'meteor/vuejs:vue3'
 
-subscribe('links.all')
+const { ready } = subscribe('links.all')
 
 const links = autoResult(() => Links.find({}))
 
@@ -32,6 +32,9 @@ function submit (form) {
         <input type="submit" name="submit" value="Add new link">
       </form>
     </li>
+
+    <div v-if="!ready">Loading...</div>
+
     <li v-for="link of links" :key="link._id">
       <a :href="link.url" target="_blank">{{ link.title }}</a>
     </li>

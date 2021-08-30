@@ -15,7 +15,11 @@ import { subscribe } from 'meteor/vuejs:vue3'
 
 export default {
   setup () {
-    subscribe('links.all' /*, 'some', 'params', 'here' */)
+    const { ready, stop } = subscribe('links.all' /*, 'some', 'params', 'here' */)
+
+    watch(ready, value => {
+      console.log('loading:', !value)
+    })
   }
 }
 ```
@@ -75,11 +79,10 @@ Full example:
 
 ```vue
 <script setup>
-// @ts-nocheck
 import { Links } from '/imports/api/links/links.js'
 import { subscribe, autoResult } from 'meteor/vuejs:vue3'
 
-subscribe('links.all')
+const { ready } = subscribe('links.all')
 
 const links = autoResult(() => Links.find({}))
 
@@ -108,6 +111,9 @@ function submit (form) {
         <input type="submit" name="submit" value="Add new link">
       </form>
     </li>
+
+    <div v-if="!ready">Loading...</div>
+
     <li v-for="link of links" :key="link._id">
       <a :href="link.url" target="_blank">{{ link.title }}</a>
     </li>
