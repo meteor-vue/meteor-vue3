@@ -80,9 +80,10 @@ Full example:
 ```vue
 <script setup>
 import { Links } from '/imports/api/links/links.js'
-import { subscribe, autoResult } from 'meteor/vuejs:vue3'
+import { subscribe, autoSubscribe, autoResult } from 'meteor/vuejs:vue3'
 
 const { ready } = subscribe('links.all')
+// const { ready } = autoSubscribe(() => ['links.all'])
 
 const links = autoResult(() => Links.find({}))
 
