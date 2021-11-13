@@ -1,8 +1,8 @@
 Package.describe({
-  name: 'vuejs:vue3',
-  version: '0.0.1',
-  summary: 'Vue 3 components',
-  git: 'https://github.com/meteor-vue/meteor-vue3',
+  name: 'seamink:vue3',
+  version: '0.0.3',
+  summary: 'Meteor Vue 3 compiler supporting compile plugins',
+  git: 'https://github.com/Altruistiq/meteor-vue3',
   documentation: 'README.md',
 })
 
