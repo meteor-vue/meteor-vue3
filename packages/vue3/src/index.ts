@@ -65,8 +65,23 @@ export function autoSubscribe (callback: () => [name: string, ...args: any[]]): 
     })
 
     onInvalidate(() => {
-      sub.stop()
       computation.stop()
+      // Do not stop the subscription immediately
+      //  if we resubscribe with the same arguments,
+      //  meteor will reuse the previous subscription
+      // See meteor/ddp-client
+      const id = sub.subscriptionId
+      if (Meteor.connection._subscriptions[id] != null) {
+        // mark inactive
+        Meteor.connection._subscriptions[id].inactive = true;
+        // check again after we resubscribe, if still inactive, cancel
+        Promise.resolve().then(() => {
+          const handle = Meteor.connection._subscriptions[id];
+          if (handle && handle.inactive) {
+            handle.stop();
+          }
+        })
+      }
     })
   }, {
     immediate: true,
