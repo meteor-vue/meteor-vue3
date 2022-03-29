@@ -44,8 +44,9 @@ export class VueCompiler extends MultiFileCachingCompiler {
     const hasScoped = descriptor.styles.some((s) => s.scoped)
     const scopeId = hash(filename)
 
+    let scriptResult;
     if (descriptor.script || descriptor.scriptSetup) {
-      const scriptResult = compileScript(descriptor, {
+      scriptResult = compileScript(descriptor, {
         id: scopeId,
         isProd,
       })
@@ -63,6 +64,7 @@ export class VueCompiler extends MultiFileCachingCompiler {
         inMap: descriptor.template.map,
         compilerOptions: {
           scopeId: hasScoped ? `data-v-${scopeId}` : undefined,
+          bindingMetadata: scriptResult ? scriptResult.bindings : undefined,
         },
       })
       if (templateResult.errors && templateResult.errors.length) {
